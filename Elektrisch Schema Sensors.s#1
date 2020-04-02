@@ -750,7 +750,7 @@ http://randomnerdtutorials.com/complete-guide-for-ultrasonic-sensor-hc-sr04/&lt;
 <label x="25.4" y="15.24" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="VCC" class="0">
+<net name="VIN(PSU)" class="0">
 <segment>
 <pinref part="M1" gate="G$1" pin="VIN"/>
 <wire x1="17.78" y1="27.94" x2="86.36" y2="27.94" width="0.1524" layer="91"/>
