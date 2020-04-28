@@ -4,14 +4,17 @@
 #include <NewPing.h>
 #define SONAR_NUM     4
 #define MAX_DISTANCE 200
-#define PING_INTERVAL 33
+#define PING_INTERVAL 60
 
 #define SAMPLE_LENGTH 10
 
-byte pingResults[SONAR_NUM];
-byte pingHistory[SONAR_NUM][SAMPLE_LENGTH];
-byte movingAvgResult[SONAR_NUM];
+uint8_t pingResults[SONAR_NUM];
+uint8_t pingHistory[SONAR_NUM][SAMPLE_LENGTH];
+uint8_t movingAvgResult[SONAR_NUM];
 
+uint8_t *pointer;
+
+// pins volgens elek schema NewPing(trigger_pin, echo_pin, MAX_DISTANCE);
 NewPing sonar[SONAR_NUM] = {
   NewPing(12, 11, MAX_DISTANCE),
   NewPing(10, 9, MAX_DISTANCE),
@@ -20,31 +23,62 @@ NewPing sonar[SONAR_NUM] = {
 };
 
 void setup() {
-  //pingHistory vullen om te testen
-  for (int i = 0; i < SAMPLE_LENGTH; i++) {
-    pingHistory[1][i] = 10;
-  }
+  Serial.begin(9600);
   
   // Setup I2C
 }
 
 void loop() {
-  for (uint8_t i = 0; i < SONAR_NUM; i++) {
-    // Dit is de code om een ping te doen
+  for (byte i = 0; i < SONAR_NUM; i++) {
+    // Do ping and put in history[0]
     pingResults[i] = sonar[i].ping_cm();
+    pingHistory[i][0] = pingResults[i];
 
-    // TODO: code ^^ in pingHistory[][] steken en telkens op te schuiven,
-    // First in, first out. (Best met byte shifts gaan werken denk ik,
-    // het is al een array van bytes)
-    
-    // Geef een array van de pingHistory en krijg de moving average er van terug
-    movingAvgResult[1] = sonar[1].convert_movingAverage(pingHistory[1]);
-    
+    // Do movingAvg conversion
+    //movingAvgResult[1] = sonar[1].convert_movingAverage(pingHistory[1]);
+
+    // Shift pingHistory
+    for (byte y = 10; y > 0; y--) {
+      pingHistory[i][y] = pingHistory[i][y-1];
+    }
     delay(PING_INTERVAL);
   }
   SendData();
+
+  // DEBUGGING, uncomment as needed
+  //LogRawInSerial();
+  //LogAvgInSerial();
+  LogHistoryInSerial();
 }
 
 void SendData() {
   // Stuur movingAvgResult[] met I2C
+}
+
+
+void LogRawInSerial() {
+  for (byte i = 0; i < SONAR_NUM; i++) {
+    Serial.print("Sensor " + String(i+1) + " RAW:"); 
+    Serial.println(pingResults[i]);
+  }
+  Serial.println("---------------------");
+}
+
+void LogAvgInSerial() {
+  for (byte i = 0; i < SONAR_NUM; i++) {
+    Serial.print("Sensor " + String(i+1) + " AVG:"); 
+    Serial.println(movingAvgResult[i]);
+  }
+  Serial.println("---------------------");
+}
+
+void LogHistoryInSerial() {
+  Serial.print("Sensor 1 RAW:"); 
+  Serial.println(pingResults[0]);
+  for (byte i = 0; i < SONAR_NUM; i++) {
+    Serial.print(pingHistory[0][i]); 
+    Serial.print(" ");
+  }
+  Serial.println();
+  Serial.println("---------------------");
 }
