@@ -12,8 +12,6 @@ uint8_t pingResults[SONAR_NUM];
 uint8_t pingHistory[SONAR_NUM][SAMPLE_LENGTH];
 uint8_t movingAvgResult[SONAR_NUM];
 
-uint8_t *pointer;
-
 // pins volgens elek schema NewPing(trigger_pin, echo_pin, MAX_DISTANCE);
 NewPing sonar[SONAR_NUM] = {
   NewPing(12, 11, MAX_DISTANCE),
@@ -35,8 +33,17 @@ void loop() {
     pingHistory[i][0] = pingResults[i];
 
     // Do movingAvg conversion
-    //movingAvgResult[1] = sonar[1].convert_movingAverage(pingHistory[1]);
+    movingAvgResult[0] = sonar[0].convert_movingAverage(pingHistory[0]);
+    movingAvgResult[1] = sonar[1].convert_movingAverage(pingHistory[1]);
+    movingAvgResult[2] = sonar[2].convert_movingAverage(pingHistory[2]);
+    movingAvgResult[3] = sonar[3].convert_movingAverage(pingHistory[3]);
 
+
+    // Kan het zijn dat bij de shift de pingHistory array langer wordt dan [10]?
+    // De averages worden nog niet correct getoond (foute input of berekening)
+    // Ook nog problemen met dat de "pingHistory[i][0] = pingResults[i];" niet correct verloopt
+
+    
     // Shift pingHistory
     for (byte y = 10; y > 0; y--) {
       pingHistory[i][y] = pingHistory[i][y-1];
@@ -46,9 +53,9 @@ void loop() {
   SendData();
 
   // DEBUGGING, uncomment as needed
-  //LogRawInSerial();
-  //LogAvgInSerial();
-  LogHistoryInSerial();
+  LogRawInSerial();
+  LogAvgInSerial();
+  //LogHistoryInSerial();
 }
 
 void SendData() {
