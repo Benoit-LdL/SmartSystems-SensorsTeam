@@ -8,13 +8,10 @@
 
 #define SAMPLE_LENGTH 10
 
-int distance1 = 0 ;
-int distance2 = 0 ;
-int distance3 = 0;
-double max_dist = 400;
+
 typedef struct SensorData {
   long movingAverage;
-  long rawData1[3];
+  long rawData1[4];
   
 } SensorData_t;
 
@@ -56,7 +53,7 @@ void loop() {
     // Do ping and put in history[0]
     pingResults[i] = sonar[i].ping_cm();
     pingHistory[i][0] = pingResults[i];
-
+  } // @Tim kan da zijn da gy een haakje waard vergete hier
     // Do movingAvg conversion
     movingAvgResult[0] = sonar[0].convert_movingAverage(pingHistory[0]);
     movingAvgResult[1] = sonar[1].convert_movingAverage(pingHistory[1]);
@@ -64,10 +61,7 @@ void loop() {
     movingAvgResult[3] = sonar[3].convert_movingAverage(pingHistory[3]);
 
     // data versturen 
-   distance1=sonar1.ping_cm();
-   distance2=sonar2.ping_cm();
-   distance3=sonar3.ping_cm();
-   lastSensorData1 = {1, {distance1,distance2,distance3}};
+   lastSensorData1 = {movingAvgResult[0],movingAvgResult[1],movingAvgResult[2],movingAvgResult[3]}};
    memcpy(&buffer, &lastSensorData1, SENSOR_DATA_SZ);
    if (!handled)
    {
