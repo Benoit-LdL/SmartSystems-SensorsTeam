@@ -4,7 +4,7 @@
 #define I2C_SCL 32
 typedef struct SensorData {
   long movingAverage;
-  long rawData1[3];
+  long rawData1[4];
 } SensorData_t;
 
 SensorData_t lastSensorData;
