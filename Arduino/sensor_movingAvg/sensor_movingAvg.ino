@@ -1,12 +1,27 @@
 // download de library van https://github.com/AP-Elektronica-ICT/NewPing
 // en verwijder andere NewPing libraries
-
+#include <Wire.h>
 #include <NewPing.h>
 #define SONAR_NUM     4
 #define MAX_DISTANCE 200
 #define PING_INTERVAL 60
 
 #define SAMPLE_LENGTH 10
+
+int distance1 = 0 ;
+int distance2 = 0 ;
+int distance3 = 0;
+double max_dist = 400;
+typedef struct SensorData {
+  long movingAverage;
+  long rawData1[3];
+  
+} SensorData_t;
+
+SensorData_t lastSensorData1;
+const uint8_t SENSOR_DATA_SZ = sizeof(SensorData_t);
+const uint8_t SENSOR_SLAVE_ADDRESS = 8;
+byte buffer[SENSOR_DATA_SZ];
 
 uint8_t pingResults[SONAR_NUM];
 uint8_t pingHistory[SONAR_NUM][SAMPLE_LENGTH];
@@ -20,10 +35,20 @@ NewPing sonar[SONAR_NUM] = {
   NewPing(6, 5, MAX_DISTANCE)
 };
 
+void requestEvent() {
+  if (handled) {
+    Wire.write(buffer, SENSOR_DATA_SZ);
+    handled = false;
+  }
+}
+
 void setup() {
   Serial.begin(9600);
+   digitalWrite(SDA, LOW);
+  digitalWrite(SCL, LOW);
+  Wire.begin(SENSOR_SLAVE_ADDRESS);
+  Wire.onRequest(requestEvent);
   
-  // Setup I2C
 }
 
 void loop() {
@@ -38,6 +63,17 @@ void loop() {
     movingAvgResult[2] = sonar[2].convert_movingAverage(pingHistory[2]);
     movingAvgResult[3] = sonar[3].convert_movingAverage(pingHistory[3]);
 
+    // data versturen 
+   distance1=sonar1.ping_cm();
+   distance2=sonar2.ping_cm();
+   distance3=sonar3.ping_cm();
+   lastSensorData1 = {1, {distance1,distance2,distance3}};
+   memcpy(&buffer, &lastSensorData1, SENSOR_DATA_SZ);
+   if (!handled)
+   {
+   Serial.println("Requested");
+    handled = true;
+   }
 
     // Kan het zijn dat bij de shift de pingHistory array langer wordt dan [10]?
     // De averages worden nog niet correct getoond (foute input of berekening)
