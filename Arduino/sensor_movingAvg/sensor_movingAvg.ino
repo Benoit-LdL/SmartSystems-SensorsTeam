@@ -82,7 +82,7 @@ void LogAvgInSerial() {
 void LogHistoryInSerial() {
   Serial.print("Sensor 1 RAW:"); 
   Serial.println(pingResults[0]);
-  for (byte i = 0; i < SONAR_NUM; i++) {
+  for (byte i = 0; i < SAMPLE_LENGTH; i++) {
     Serial.print(pingHistory[0][i]); 
     Serial.print(" ");
   }
