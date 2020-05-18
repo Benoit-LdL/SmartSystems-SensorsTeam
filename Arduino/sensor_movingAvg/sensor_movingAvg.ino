@@ -1,11 +1,10 @@
 // download de library van https://github.com/AP-Elektronica-ICT/NewPing
-// en verwijder andere NewPing libraries
 
 #include <NewPing.h>
+
 #define SONAR_NUM     4
 #define MAX_DISTANCE 200
 #define PING_INTERVAL 60
-
 #define SAMPLE_LENGTH 10
 
 uint8_t pingResults[SONAR_NUM];
@@ -22,29 +21,15 @@ NewPing sonar[SONAR_NUM] = {
 
 void setup() {
   Serial.begin(9600);
-  
-  // Setup I2C
 }
 
 void loop() {
   for (byte i = 0; i < SONAR_NUM; i++) {
-    // Do ping and put in history[0]
     pingResults[i] = sonar[i].ping_cm();
     pingHistory[i][0] = pingResults[i];
 
-    // Do movingAvg conversion
-    movingAvgResult[0] = sonar[0].convert_movingAverage(pingHistory[0]);
-    movingAvgResult[1] = sonar[1].convert_movingAverage(pingHistory[1]);
-    movingAvgResult[2] = sonar[2].convert_movingAverage(pingHistory[2]);
-    movingAvgResult[3] = sonar[3].convert_movingAverage(pingHistory[3]);
+    movingAvgResult[i] = sonar[i].convert_movingAverage(pingHistory[i]);
 
-
-    // Kan het zijn dat bij de shift de pingHistory array langer wordt dan [10]?
-    // De averages worden nog niet correct getoond (foute input of berekening)
-    // Ook nog problemen met dat de "pingHistory[i][0] = pingResults[i];" niet correct verloopt
-
-    
-    // Shift pingHistory
     for (byte y = 10; y > 0; y--) {
       pingHistory[i][y] = pingHistory[i][y-1];
     }
@@ -53,13 +38,13 @@ void loop() {
   SendData();
 
   // DEBUGGING, uncomment as needed
-  LogRawInSerial();
-  LogAvgInSerial();
+  //LogRawInSerial();
+  //LogAvgInSerial();
   //LogHistoryInSerial();
 }
 
 void SendData() {
-  // Stuur movingAvgResult[] met I2C
+  // Bekijk nieuwe versie, sensor_movingAvgI2C
 }
 
 

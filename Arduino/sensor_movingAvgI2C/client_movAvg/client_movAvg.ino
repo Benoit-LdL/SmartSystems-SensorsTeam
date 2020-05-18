@@ -10,8 +10,7 @@
 #define SAMPLE_LENGTH 10
 
 typedef struct SensorData {
-  long movingAverage;
-  long rawData1[4];
+  uint8_t movingAverage[4];
 } SensorData_t;
 
 SensorData_t latestSensorData;
@@ -52,10 +51,7 @@ void loop() {
     pingResults[i] = sonar[i].ping_cm();
     pingHistory[i][0] = pingResults[i];
   
-    movingAvgResult[0] = sonar[0].convert_movingAverage(pingHistory[0]);
-    movingAvgResult[1] = sonar[1].convert_movingAverage(pingHistory[1]);
-    movingAvgResult[2] = sonar[2].convert_movingAverage(pingHistory[2]);
-    movingAvgResult[3] = sonar[3].convert_movingAverage(pingHistory[3]);
+    movingAvgResult[i] = sonar[i].convert_movingAverage(pingHistory[i]);
 
     for (byte y = 10; y > 0; y--) {
       pingHistory[i][y] = pingHistory[i][y-1];
