@@ -24,10 +24,10 @@ uint8_t movingAvgResult[SONAR_NUM];
 
 // pins volgens elek schema NewPing(trigger_pin, echo_pin, MAX_DISTANCE);
 NewPing sonar[SONAR_NUM] = {
-  NewPing(11, 12, MAX_DISTANCE),
-  NewPing(9, 10, MAX_DISTANCE),
-  NewPing(7, 8, MAX_DISTANCE),
   NewPing(5, 6, MAX_DISTANCE)
+  NewPing(7, 8, MAX_DISTANCE),
+  NewPing(9, 10, MAX_DISTANCE),
+  NewPing(11, 12, MAX_DISTANCE),
 };
 
 void requestEvent() {
