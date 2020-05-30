@@ -4,7 +4,7 @@
 #include <Wire.h>
 #include <NewPing.h>
 
-#define SONAR_NUM     4
+#define SONAR_NUM      4
 #define MAX_DISTANCE 200
 #define PING_INTERVAL 60
 #define SAMPLE_LENGTH 10
@@ -24,10 +24,10 @@ uint8_t movingAvgResult[SONAR_NUM];
 
 // pins volgens elek schema NewPing(trigger_pin, echo_pin, MAX_DISTANCE);
 NewPing sonar[SONAR_NUM] = {
-  NewPing(12, 11, MAX_DISTANCE),
-  NewPing(10, 9, MAX_DISTANCE),
-  NewPing(8, 7, MAX_DISTANCE),
-  NewPing(6, 5, MAX_DISTANCE)
+  NewPing(11, 12, MAX_DISTANCE),
+  NewPing(9, 10, MAX_DISTANCE),
+  NewPing(7, 8, MAX_DISTANCE),
+  NewPing(5, 6, MAX_DISTANCE)
 };
 
 void requestEvent() {
