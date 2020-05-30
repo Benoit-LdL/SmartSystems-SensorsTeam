@@ -24,22 +24,24 @@ void setup() {
 }
 
 void loop() {
-  for (byte i = 0; i < SONAR_NUM; i++) {
+  for (byte i = 0; i < SONAR_NUM; i++) {    
     pingResults[i] = sonar[i].ping_cm();
     pingHistory[i][0] = pingResults[i];
 
     movingAvgResult[i] = sonar[i].convert_movingAverage(pingHistory[i]);
-
+    
     for (byte y = 10; y > 0; y--) {
       pingHistory[i][y] = pingHistory[i][y-1];
     }
+    
     delay(PING_INTERVAL);
   }
-  SendData();
+  //SendData();
+ 
 
-  // DEBUGGING, uncomment as needed
-  //LogRawInSerial();
-  //LogAvgInSerial();
+  // DEBUGGING, uncomment as needed 
+  LogAvgInSerial();
+  LogRawInSerial();
   //LogHistoryInSerial();
 }
 
@@ -47,19 +49,18 @@ void SendData() {
   // Bekijk nieuwe versie, sensor_movingAvgI2C
 }
 
+void LogAvgInSerial() {
+  for (byte i = 0; i < SONAR_NUM; i++) {
+    Serial.print("Sensor " + String(i+1) + " AVG:"); 
+    Serial.println(movingAvgResult[i]);
+  }
+  Serial.println("---------------------");
+}
 
 void LogRawInSerial() {
   for (byte i = 0; i < SONAR_NUM; i++) {
     Serial.print("Sensor " + String(i+1) + " RAW:"); 
     Serial.println(pingResults[i]);
-  }
-  Serial.println("---------------------");
-}
-
-void LogAvgInSerial() {
-  for (byte i = 0; i < SONAR_NUM; i++) {
-    Serial.print("Sensor " + String(i+1) + " AVG:"); 
-    Serial.println(movingAvgResult[i]);
   }
   Serial.println("---------------------");
 }

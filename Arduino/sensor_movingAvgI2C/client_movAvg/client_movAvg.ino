@@ -19,9 +19,8 @@ const uint8_t SENSOR_SLAVE_ADDRESS = 8;
 byte buffer[SENSOR_DATA_SIZE];
 
 uint8_t pingResults[SONAR_NUM];
-uint8_t pingHistory[SONAR_NUM][SAMPLE_LENGTH];
+uint8_t pingHistory[SONAR_NUM][SAMPLE_LENGTH];S
 uint8_t movingAvgResult[SONAR_NUM];
-bool handled;
 
 // pins volgens elek schema NewPing(trigger_pin, echo_pin, MAX_DISTANCE);
 NewPing sonar[SONAR_NUM] = {
@@ -32,10 +31,7 @@ NewPing sonar[SONAR_NUM] = {
 };
 
 void requestEvent() {
-  if (handled) {
-    Wire.write(buffer, SENSOR_DATA_SIZE);
-    handled = false;
-  }
+  Wire.write(buffer, SENSOR_DATA_SIZE);
 }
 
 void setup() {
@@ -61,18 +57,14 @@ void loop() {
   SendData();
 
   // DEBUGGING, uncomment as needed
-  //LogRawInSerial();
-  //LogAvgInSerial();
+  LogRawInSerial();
+  LogAvgInSerial();
   //LogHistoryInSerial();
 }
 
 void SendData() {
   latestSensorData = {movingAvgResult[0],movingAvgResult[1],movingAvgResult[2],movingAvgResult[3]};
   memcpy(&buffer, &latestSensorData, SENSOR_DATA_SIZE);
-  if (!handled) {
-   Serial.println("Requested");
-    handled = true;
-  }
 }
 
 void LogRawInSerial() {
