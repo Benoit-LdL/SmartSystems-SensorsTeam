@@ -11,7 +11,6 @@
 
 typedef struct SensorData {
   uint8_t movingAverage[4];
-  uint8_t average[4];
 } SensorData_t;
 
 SensorData_t latestSensorData;
