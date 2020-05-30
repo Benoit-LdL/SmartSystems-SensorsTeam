@@ -6,7 +6,7 @@
 
 #define SONAR_NUM      4
 #define MAX_DISTANCE 200
-#define PING_INTERVAL 20
+#define PING_INTERVAL 5
 #define SAMPLE_LENGTH 5
 
 typedef struct SensorData {
@@ -80,7 +80,7 @@ void loop() {
 void SendData() {
   //latestSensorData = {movingAvgResult[0],movingAvgResult[1],movingAvgResult[2],movingAvgResult[3]};
   latestSensorData = {averageResult[0],averageResult[1],averageResult[2],averageResult[3]};
-  LogAvrg(); //print data in cli
+  //LogAvrg(); //print data in cli
   memcpy(&buffer, &latestSensorData, SENSOR_DATA_SIZE);
 }
 
