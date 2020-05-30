@@ -19,7 +19,7 @@ const uint8_t SENSOR_SLAVE_ADDRESS = 8;
 byte buffer[SENSOR_DATA_SIZE];
 
 uint8_t pingResults[SONAR_NUM];
-uint8_t pingHistory[SONAR_NUM][SAMPLE_LENGTH];S
+uint8_t pingHistory[SONAR_NUM][SAMPLE_LENGTH];
 uint8_t movingAvgResult[SONAR_NUM];
 
 // pins volgens elek schema NewPing(trigger_pin, echo_pin, MAX_DISTANCE);
