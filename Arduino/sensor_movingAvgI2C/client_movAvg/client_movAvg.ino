@@ -6,11 +6,12 @@
 
 #define SONAR_NUM      4
 #define MAX_DISTANCE 200
-#define PING_INTERVAL 60
-#define SAMPLE_LENGTH 10
+#define PING_INTERVAL 20
+#define SAMPLE_LENGTH 5
 
 typedef struct SensorData {
   uint8_t movingAverage[4];
+  uint8_t average[4];
 } SensorData_t;
 
 SensorData_t latestSensorData;
@@ -19,8 +20,13 @@ const uint8_t SENSOR_SLAVE_ADDRESS = 8;
 byte buffer[SENSOR_DATA_SIZE];
 
 uint8_t pingResults[SONAR_NUM];
-uint8_t pingHistory[SONAR_NUM][SAMPLE_LENGTH];
-uint8_t movingAvgResult[SONAR_NUM];
+uint8_t pingTotal=0;
+uint8_t averageResult[SONAR_NUM];
+
+/* //code movingAverage
+//uint8_t pingHistory[SONAR_NUM][SAMPLE_LENGTH];
+//uint8_t movingAvgResult[SONAR_NUM];
+*/
 
 // pins volgens elek schema NewPing(trigger_pin, echo_pin, MAX_DISTANCE);
 NewPing sonar[SONAR_NUM] = {
@@ -44,6 +50,7 @@ void setup() {
 
 void loop() {
   for (byte i = 0; i < SONAR_NUM; i++) {
+    /* //code movingAverage
     pingResults[i] = sonar[i].ping_cm();
     pingHistory[i][0] = pingResults[i];
   
@@ -52,21 +59,43 @@ void loop() {
     for (byte y = 10; y > 0; y--) {
       pingHistory[i][y] = pingHistory[i][y-1];
     }
-    delay(PING_INTERVAL);
+    */
+    
+    for (byte j = 0; j < SAMPLE_LENGTH; j++)
+    {
+      pingTotal += sonar[i].ping_cm();
+      delay(PING_INTERVAL);
+    }
+    averageResult[i] = pingTotal / SAMPLE_LENGTH;
+    pingTotal = 0; //reset
   }
   SendData();
-
-  // DEBUGGING, uncomment as needed
-  LogRawInSerial();
-  LogAvgInSerial();
+  /* DEBUGGING, uncomment as needed
+  //LogRawInSerial();
+  //LogAvgInSerial();
   //LogHistoryInSerial();
+  */
 }
 
 void SendData() {
-  latestSensorData = {movingAvgResult[0],movingAvgResult[1],movingAvgResult[2],movingAvgResult[3]};
+  //latestSensorData = {movingAvgResult[0],movingAvgResult[1],movingAvgResult[2],movingAvgResult[3]};
+  latestSensorData = {averageResult[0],averageResult[1],averageResult[2],averageResult[3]};
+  LogAvrg(); //print data in cli
   memcpy(&buffer, &latestSensorData, SENSOR_DATA_SIZE);
 }
 
+void LogAvrg()
+{
+  Serial.println("-----------------------");
+  Serial.print("Sensor"); Serial.print(": ");
+  for (int i = 0;i<SONAR_NUM;i++)
+  {
+     Serial.print(averageResult[i]); Serial.print(" - ");
+  }
+  Serial.println();
+}
+
+/* //Logging
 void LogRawInSerial() {
   for (byte i = 0; i < SONAR_NUM; i++) {
     Serial.print("Sensor " + String(i+1) + " RAW:"); 
@@ -74,7 +103,6 @@ void LogRawInSerial() {
   }
   Serial.println("---------------------");
 }
-
 void LogAvgInSerial() {
   for (byte i = 0; i < SONAR_NUM; i++) {
     Serial.print("Sensor " + String(i+1) + " AVG:"); 
@@ -82,7 +110,6 @@ void LogAvgInSerial() {
   }
   Serial.println("---------------------");
 }
-
 void LogHistoryInSerial() {
   Serial.print("Sensor 1 RAW:"); 
   Serial.println(pingResults[0]);
@@ -93,3 +120,4 @@ void LogHistoryInSerial() {
   Serial.println();
   Serial.println("---------------------");
 }
+*/
